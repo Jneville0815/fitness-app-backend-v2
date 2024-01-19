@@ -1,0 +1,49 @@
+https://github.com/create-go-app/fiber-go-template/tree/master
+
+docker run --name mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=1baseball1  --restart unless-stopped mysql:8
+
+docker exec -it mysql mysql -p
+CREATE DATABASE test;
+USE test;
+CREATE TABLE users (
+    id CHAR(36) NOT NULL PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    user_status INT NOT NULL,
+    user_role VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE workouts (
+    user_id CHAR(36) NOT NULL,
+    bench DECIMAL(5,2) NOT NULL,
+    overhead_press DECIMAL(5,2) NOT NULL,
+    squat DECIMAL(5,2) NOT NULL,
+    deadlift DECIMAL(5,2) NOT NULL,
+    current_day INT CHECK (current_day >= 0 AND current_day <= 15),
+    note TEXT,
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE quotes (
+    user_id CHAR(36) NOT NULL,
+    source VARCHAR(255) NOT NULL,
+    quote TEXT NOT NULL,
+    num_views INT NOT NULL,
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+docker run --rm -d --name redis -p 6379:6379 redis
+redis-cli -h localhost
+
+curl -d '{"email":"test@test.com","password":"test","user_role":"admin"}' -H "Content-Type: application/json" -X POST http://localhost:9991/api/v1/user/register
+curl -d '{"email":"test@test.com","password":"test"}' -H "Content-Type: application/json" -X POST http://localhost:9991/api/v1/user/login
+
+curl -H "Content-Type: application/json" -H "Authorization: Bearer <access>" -X POST http://localhost:9991/api/v1/users/logout
+
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -d '{"bench":100,"overhead_press":200,"squat":300,"deadlift":500,"current_day":0,"note":"this is a note that is being used for testing purposes"}' -H "Content-Type: application/json" -X POST http://localhost:9991/api/v1/user/workout
+
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -d '{"source":"test","quote":"test text","num_views":0}' -H "Content-Type: application/json" -X POST http://localhost:9991/api/v1/user/quotes
