@@ -28,11 +28,11 @@ CREATE TABLE workouts (
 );
 
 CREATE TABLE quotes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id CHAR(36) NOT NULL,
     source VARCHAR(255) NOT NULL,
     quote TEXT NOT NULL,
     num_views INT NOT NULL,
-    PRIMARY KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

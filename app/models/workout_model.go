@@ -11,3 +11,13 @@ type Workout struct {
 	CurrentDay    int       `db:"current_day" json:"current_day" validate:"min=0,max=15"`
 	Note          string    `db:"note" json:"note"`
 }
+
+type Note struct {
+	UserID uuid.UUID `db:"user_id" json:"user_id" validate:"required,uuid"`
+	Note   string    `db:"note" json:"note" validate:"required"`
+}
+
+type CurrentDay struct {
+	UserID     uuid.UUID `db:"user_id" json:"user_id" validate:"required,uuid"`
+	CurrentDay int       `db:"current_day" json:"current_day" validate:"required,min=0,max=15"`
+}

@@ -23,6 +23,46 @@ func (q *WorkoutQueries) CreateWorkout(w *models.Workout) error {
 	return nil
 }
 
+func (q *WorkoutQueries) UpdateWorkout(w *models.Workout) error {
+	query := `
+        UPDATE workouts 
+        SET bench = ?, overhead_press = ?, squat = ?, deadlift = ?, current_day = ?, note = ?
+        WHERE user_id = ?
+    `
+
+	_, err := q.Exec(
+		query,
+		w.Bench, w.OverheadPress, w.Squat, w.DeadLift, w.CurrentDay, w.Note, w.UserID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (q *WorkoutQueries) UpdateNote(n *models.Note) error {
+	query := `UPDATE workouts SET note = ? WHERE user_id = ?`
+
+	_, err := q.Exec(query, n.Note, n.UserID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (q *WorkoutQueries) UpdateCurrentDay(c *models.CurrentDay) error {
+	query := `UPDATE workouts SET current_day = ? WHERE user_id = ?`
+
+	_, err := q.Exec(query, c.CurrentDay, c.UserID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (q *WorkoutQueries) GetWorkout(userId string) (models.Workout, error) {
 	workout := models.Workout{}
 

@@ -9,7 +9,7 @@ type QuoteQueries struct {
 	*sqlx.DB
 }
 
-func (q *WorkoutQueries) CreateQuote(qu *models.Quote) error {
+func (q *QuoteQueries) CreateQuote(qu *models.Quote) error {
 	query := `INSERT INTO quotes (user_id, source, quote, num_views) VALUES (?, ?, ?, ?)`
 
 	_, err := q.Exec(
@@ -21,4 +21,17 @@ func (q *WorkoutQueries) CreateQuote(qu *models.Quote) error {
 	}
 
 	return nil
+}
+
+func (q *QuoteQueries) GetQuotes(userId string) ([]models.Quote, error) {
+	var quotes []models.Quote
+
+	query := `SELECT * FROM quotes WHERE user_id = ?`
+
+	err := q.Select(&quotes, query, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return quotes, nil
 }

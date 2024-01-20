@@ -1,4 +1,3 @@
 - add role to certain endpoints again (credentials)
 - Post to create, Put to update
 - More secure passwords
-- tokens are still working after they have expired

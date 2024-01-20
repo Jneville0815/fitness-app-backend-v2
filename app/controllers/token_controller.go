@@ -23,8 +23,6 @@ func RenewTokens(c *fiber.Ctx) error {
 		})
 	}
 
-	// somewhere need to make sure that the access token is in redis
-
 	expiresRefreshToken, err := utils.ParseRefreshToken(renew.RefreshToken)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -42,7 +40,7 @@ func RenewTokens(c *fiber.Ctx) error {
 			})
 		}
 
-		tokens, err := utils.GenerateNewTokens(userID.String())
+		connRedis, err := cache.RedisConnection()
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": true,
@@ -50,7 +48,21 @@ func RenewTokens(c *fiber.Ctx) error {
 			})
 		}
 
-		connRedis, err := cache.RedisConnection()
+		redisRefresh, err := connRedis.Get(context.Background(), userID.String()).Result()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": true,
+				"msg":   err.Error(),
+			})
+		}
+		if redisRefresh != renew.RefreshToken {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": true,
+				"msg":   "no token on server to match token submitted",
+			})
+		}
+
+		tokens, err := utils.GenerateNewTokens(userID.String())
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": true,
@@ -77,7 +89,7 @@ func RenewTokens(c *fiber.Ctx) error {
 	} else {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": true,
-			"msg":   "unauthorized, your session was ended earlier",
+			"msg":   "unauthorized, refresh token expired",
 		})
 	}
 }

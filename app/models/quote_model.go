@@ -5,6 +5,7 @@ import (
 )
 
 type Quote struct {
+	ID        int       `db:"id" json:"id"`
 	UserID    uuid.UUID `db:"user_id" json:"user_id" validate:"required,uuid"`
 	Source    string    `db:"source" json:"source" validate:"required,lte=255"`
 	QuoteText string    `db:"quote" json:"quote" validate:"required"`
