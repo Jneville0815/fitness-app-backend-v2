@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Jneville0815/fitness-app-backend-v2/pkg/middleware"
 	"github.com/Jneville0815/fitness-app-backend-v2/pkg/routes"
+	"github.com/Jneville0815/fitness-app-backend-v2/platform/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -15,6 +16,12 @@ func main() {
 	}
 
 	app := fiber.New()
+
+	database.DB, err = database.OpenDBConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	middleware.FiberMiddleware(app)
 

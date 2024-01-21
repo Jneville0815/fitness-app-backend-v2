@@ -2,6 +2,8 @@ package database
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -10,9 +12,9 @@ import (
 )
 
 func MysqlConnection() (*sqlx.DB, error) {
-	maxConn := 100
-	maxIdleConn := 10
-	maxLifetimeConn := 2
+	maxConn, _ := strconv.Atoi(os.Getenv("DB_MAX_CONNECTIONS"))
+	maxIdleConn, _ := strconv.Atoi(os.Getenv("DB_MAX_IDLE_CONNECTIONS"))
+	maxLifetimeConn, _ := strconv.Atoi(os.Getenv("DB_MAX_LIFETIME_CONNECTIONS"))
 
 	db, err := sqlx.Connect("mysql", "root:1baseball1@tcp(127.0.0.1:3306)/test?parseTime=true")
 	if err != nil {

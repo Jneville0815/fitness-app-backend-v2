@@ -35,15 +35,7 @@ func CreateWorkout(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	if err := db.CreateWorkout(workout); err != nil {
+	if err := database.DB.CreateWorkout(workout); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   err.Error(),
@@ -85,15 +77,7 @@ func UpdateWorkout(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	if err := db.UpdateWorkout(workout); err != nil {
+	if err := database.DB.UpdateWorkout(workout); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   err.Error(),
@@ -135,15 +119,7 @@ func UpdateNote(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	if err := db.UpdateNote(note); err != nil {
+	if err := database.DB.UpdateNote(note); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   err.Error(),
@@ -185,15 +161,7 @@ func UpdateCurrentDay(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	if err := db.UpdateCurrentDay(currentDay); err != nil {
+	if err := database.DB.UpdateCurrentDay(currentDay); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   err.Error(),
@@ -218,15 +186,7 @@ func GetWorkout(c *fiber.Ctx) error {
 
 	userId := claims.UserID
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	workout, err := db.GetWorkout(userId.String())
+	workout, err := database.DB.GetWorkout(userId.String())
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": true,
@@ -238,5 +198,57 @@ func GetWorkout(c *fiber.Ctx) error {
 		"error":   false,
 		"msg":     nil,
 		"workout": workout,
+	})
+}
+
+func GetCurrentDay(c *fiber.Ctx) error {
+	claims, err := utils.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	userId := claims.UserID
+
+	currentDay, err := database.DB.GetCurrentDay(userId.String())
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error":      false,
+		"msg":        nil,
+		"currentDay": currentDay,
+	})
+}
+
+func GetNote(c *fiber.Ctx) error {
+	claims, err := utils.ExtractTokenMetadata(c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	userId := claims.UserID
+
+	note, err := database.DB.GetNote(userId.String())
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+		"note":  note,
 	})
 }

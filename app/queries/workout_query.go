@@ -75,3 +75,27 @@ func (q *WorkoutQueries) GetWorkout(userId string) (models.Workout, error) {
 
 	return workout, nil
 }
+
+func (q *WorkoutQueries) GetCurrentDay(userId string) (models.CurrentDay, error) {
+	currentDay := models.CurrentDay{}
+
+	query := `SELECT user_id, current_day FROM workouts WHERE user_id = ?`
+
+	err := q.Get(&currentDay, query, userId)
+	if err != nil {
+		return currentDay, err
+	}
+	return currentDay, nil
+}
+
+func (q *WorkoutQueries) GetNote(userId string) (models.Note, error) {
+	note := models.Note{}
+
+	query := `SELECT user_id, note FROM workouts WHERE user_id = ?`
+
+	err := q.Get(&note, query, userId)
+	if err != nil {
+		return note, err
+	}
+	return note, nil
+}

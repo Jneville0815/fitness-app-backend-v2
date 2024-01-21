@@ -18,5 +18,9 @@ func PrivateRoutes(a *fiber.App) {
 	route.Put("/user/workout/current-day", middleware.JWTProtected(), controllers.UpdateCurrentDay)
 
 	route.Get("/user/workout", middleware.JWTProtected(), controllers.GetWorkout)
+	route.Get("/user/workout/note", middleware.JWTProtected(), controllers.GetNote)
+	route.Get("/user/workout/current-day", middleware.JWTProtected(), controllers.GetCurrentDay)
 	route.Get("/user/quotes", middleware.JWTProtected(), controllers.GetQuotes)
+
+	route.Delete("/user/quotes/:quote_id", middleware.JWTProtected(), controllers.DeleteQuote)
 }

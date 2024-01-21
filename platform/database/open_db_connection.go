@@ -11,6 +11,8 @@ type Queries struct {
 	*queries.QuoteQueries
 }
 
+var DB *Queries
+
 func OpenDBConnection() (*Queries, error) {
 	var (
 		db  *sqlx.DB

@@ -30,14 +30,6 @@ func UserRegister(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
 	user := &models.User{}
 
 	user.ID = uuid.New()
@@ -55,7 +47,7 @@ func UserRegister(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := db.CreateUser(user); err != nil {
+	if err := database.DB.CreateUser(user); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   err.Error(),
@@ -81,15 +73,7 @@ func UserLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
-
-	foundedUser, err := db.GetUserByEmail(login.Email)
+	foundedUser, err := database.DB.GetUserByEmail(login.Email)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": true,

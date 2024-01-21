@@ -1,8 +1,10 @@
 package queries
 
 import (
+	"fmt"
 	"github.com/Jneville0815/fitness-app-backend-v2/app/models"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 )
 
 type QuoteQueries struct {
@@ -34,4 +36,20 @@ func (q *QuoteQueries) GetQuotes(userId string) ([]models.Quote, error) {
 	}
 
 	return quotes, nil
+}
+
+func (q *QuoteQueries) DeleteQuote(userId string, quoteIdStr string) error {
+	quoteId, err := strconv.Atoi(quoteIdStr)
+	if err != nil {
+		return fmt.Errorf("invalid quote_id: %v", err)
+	}
+
+	query := `DELETE FROM quotes WHERE id = ? AND user_id = ?`
+
+	_, err = q.Exec(query, quoteId, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
